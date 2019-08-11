@@ -71,7 +71,9 @@ public class GiraphRunner implements Tool {
       conf = new Configuration();
     }
     GiraphConfiguration giraphConf = new GiraphConfiguration(getConf());
+    LOG.info("fzhang: the args is: " + args);
     CommandLine cmd = ConfigurationUtils.parseArgs(giraphConf, args);
+    LOG.info("fzhang");
     if (null == cmd) {
       return 0; // user requested help/info printout, don't run a job.
     }
