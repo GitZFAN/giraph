@@ -84,7 +84,9 @@ public class GraphMapper<I extends WritableComparable, V extends Writable,
     // Notify the master quicker if there is worker failure rather than
     // waiting for ZooKeeper to timeout and delete the ephemeral znodes
     try {
+      LOG.info("fzhang: this is the starting point of the graph computation...");
       setup(context);
+      LOG.info("fzhang: execute the graphTaskManager...");
       while (context.nextKeyValue()) {
         graphTaskManager.execute();
       }
