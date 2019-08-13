@@ -275,6 +275,16 @@ end[PURE_YARN]*/
       throw new RuntimeException(
         "setup: Offlining servers due to exception...", e);
     }
+
+    String failureSupersteps = conf.get("failureSupersteps");
+    if (failureSupersteps != null) {
+      LOG.info("fzhang: failure Supersteps: " + failureSupersteps);
+    }
+    String failureWorkers = conf.get("failureWorkers");
+    if (failureWorkers != null) {
+      LOG.info("fzhang: failure Workers: " + failureWorkers);
+    }
+
     context.setStatus(getGraphFunctions().toString() + " starting...");
   }
 

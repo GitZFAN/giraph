@@ -130,6 +130,11 @@ end[PURE_YARN]*/
         " -ca <param1>=<value1>,<param2>=<value2> -ca <param3>=<value3> etc." +
         " It can appear multiple times, and the last one has effect" +
         " for the same param.");
+
+    OPTIONS.addOption("fs", "failureSupersteps", true,
+            "which supersteps of failure will occur");
+    OPTIONS.addOption("fw", "failureWorkers", true,
+            "which workers of failure will occur");
   }
 
   /**
@@ -204,6 +209,16 @@ end[PURE_YARN]*/
     if (cmd.hasOption("la")) {
       printSupportedAlgorithms();
       return null;
+    }
+
+    if (cmd.hasOption("fs") && cmd.hasOption("fw")) {
+      LOG.info("fzhang: some failure will occur at: " + cmd.getOptionValue("fs") + " supersteps...");
+      LOG.info("fzhang: workers" + cmd.getOptionValue("fw") + " will failure...");
+    } else if (cmd.hasOption("fs") || cmd.hasOption("fw")) {
+      LOG.info("fzhang: we need both failure supersteps and failure workers, please check the args...");
+      return null;
+    } else {
+      LOG.info("fzhang: this application will not simulate failure...");
     }
 
     // Be certain that there are no critical args missing, die if so.
@@ -406,6 +421,15 @@ end[PURE_YARN]*/
         }
       }
     }
+    if (cmd.hasOption("fs")) {
+      String fsValue = cmd.getOptionValue("fs");
+      conf.set("failureSupersteps", fsValue);
+    }
+    if (cmd.hasOption("fw")) {
+      String fsValue = cmd.getOptionValue("fw");
+      conf.set("failureWorkers", fsValue);
+    }
+
     // Now, we parse options that are specific to Hadoop MR Job
     if (cmd.hasOption("vif")) {
       if (cmd.hasOption("vip")) {
