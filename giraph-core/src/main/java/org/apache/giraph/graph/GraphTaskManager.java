@@ -276,13 +276,11 @@ end[PURE_YARN]*/
         "setup: Offlining servers due to exception...", e);
     }
 
-    String failureSupersteps = conf.get("failureSupersteps");
-    if (failureSupersteps != null) {
-      LOG.info("fzhang: failure Supersteps: " + failureSupersteps);
-    }
-    String failureWorkers = conf.get("failureWorkers");
-    if (failureWorkers != null) {
-      LOG.info("fzhang: failure Workers: " + failureWorkers);
+    String failureSupersteps = conf.get("failureSuperstepsWorkers");
+    for (String supAndWorker :
+            failureSupersteps.split("\\+")) {
+      LOG.info("fzhang: failure will occur at superstep [" + supAndWorker.split(":")[0]
+              + "], worker [" + supAndWorker.split(":")[1] + "]");
     }
 
     context.setStatus(getGraphFunctions().toString() + " starting...");

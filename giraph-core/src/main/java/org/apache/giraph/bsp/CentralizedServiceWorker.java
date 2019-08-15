@@ -256,4 +256,6 @@ public interface CentralizedServiceWorker<I extends WritableComparable,
    */
   void addressesAndPartitionsReceived(
       AddressesAndPartitionsWritable addressesAndPartitions);
+
+  void simulateWorkerFailure();
 }

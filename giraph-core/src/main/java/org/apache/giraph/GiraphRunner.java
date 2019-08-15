@@ -71,13 +71,13 @@ public class GiraphRunner implements Tool {
       conf = new Configuration();
     }
     GiraphConfiguration giraphConf = new GiraphConfiguration(getConf());
-    for (String arg : args) {
+    /*for (String arg : args) {
       LOG.info("fzhang: the args is: " + arg);
     }
     LOG.info("fzhang: the args is: " + args.toString());
-    LOG.info("fzhang: the args size is: " + args.length);
+    LOG.info("fzhang: the args size is: " + args.length);*/
     CommandLine cmd = ConfigurationUtils.parseArgs(giraphConf, args);
-    LOG.info("fzhang: the cmd after parsed: " + cmd);
+//    LOG.info("fzhang: the cmd after parsed: " + cmd);
     if (null == cmd) {
       return 0; // user requested help/info printout, don't run a job.
     }

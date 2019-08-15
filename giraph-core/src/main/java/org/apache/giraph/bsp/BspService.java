@@ -958,4 +958,85 @@ public abstract class BspService<I extends WritableComparable,
   protected WorkerInfo getWorkerInfoById(int id) {
     return getWorkerInfoList().get(id);
   }
+
+  public void writeFailureToZk() throws KeeperException, InterruptedException {
+    ImmutableClassesGiraphConfiguration<I, V, E> conf = getConfiguration();
+    String failureSuperstepsWorkers = conf.get("failureSuperstepsWorkers");
+    if (failureSuperstepsWorkers != null) {
+      for (String supAndWorkers :
+              failureSuperstepsWorkers.split("\\+")) {
+        String superstep = supAndWorkers.split(":")[0];
+        String workers = supAndWorkers.split(":")[1];
+        for (String w: workers.split(",")
+        ) {
+          getZkExt().createExt(basePath + "/_failure/" + superstep + "/" + w,
+                  null,
+                  Ids.OPEN_ACL_UNSAFE,
+                  CreateMode.PERSISTENT,
+                  true);
+        }
+      }
+    }
+  }
+
+  public void simulateFailure() {
+    long superstep = getSuperstep();
+    int taskPartition = getConfiguration().getTaskPartition();
+    String failurePath = basePath + "/_failure";
+    try {
+      getZkExt().createExt(failurePath,
+              null,
+              Ids.OPEN_ACL_UNSAFE,
+              CreateMode.PERSISTENT,
+              true);
+    } catch (KeeperException.NodeExistsException e) {
+      if (LOG.isInfoEnabled()) {
+        LOG.info("simulateFailure: Node " +
+                failurePath + " already exists!");
+      }
+    } catch (KeeperException e) {
+      throw new IllegalStateException(
+              "simulateFailure: KeeperException", e);
+    } catch (InterruptedException e) {
+      throw new IllegalStateException(
+              "simulateFailure: InterruptedException", e);
+    }
+
+    List<String> failureSuperstepList;
+    try {
+      failureSuperstepList =
+              getZkExt().getChildrenExt(failurePath, true, false, false);
+    } catch (KeeperException e) {
+      throw new IllegalStateException(
+              "simulateFailure: KeeperException", e);
+    } catch (InterruptedException e) {
+      throw new IllegalStateException(
+              "simulateFailure: InterruptedException", e);
+    }
+    if (failureSuperstepList.isEmpty()) {
+      return;
+    } else if (failureSuperstepList.contains(String.valueOf(superstep))) {
+      List<String> failureWorkerList;
+      try {
+        failureWorkerList =
+                getZkExt().getChildrenExt(failurePath + "/" + superstep,
+                        true, false, false);
+        if (failureWorkerList.isEmpty()) {
+          return;
+        } else if (failureWorkerList.contains(String.valueOf(taskPartition))) {
+          String failureSWPath = failurePath + "/" + superstep + "/" + taskPartition;
+          LOG.info("fzhang: simulate failure at path [" + failureSWPath + "]");
+          getZkExt().deleteExt(failureSWPath, -1, false);
+          throw new RuntimeException("fzhang: simulate worker " + taskPartition + " failure, " +
+                  "at superstep " + superstep);
+        }
+      } catch (KeeperException e) {
+        throw new IllegalStateException(
+                "simulateFailure: KeeperException", e);
+      } catch (InterruptedException e) {
+        throw new IllegalStateException(
+                "simulateFailure: InterruptedException", e);
+      }
+    }
+  }
 }

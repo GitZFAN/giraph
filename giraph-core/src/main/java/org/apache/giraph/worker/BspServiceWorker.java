@@ -1866,4 +1866,9 @@ else[HADOOP_NON_SECURE]*/
       AddressesAndPartitionsWritable addressesAndPartitions) {
     addressesAndPartitionsHolder.offer(addressesAndPartitions);
   }
+
+  @Override
+  public void simulateWorkerFailure() {
+    simulateFailure();
+  }
 }

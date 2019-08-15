@@ -294,4 +294,8 @@ public abstract class AbstractComputation<I extends WritableComparable,
     return allWorkersInfo.getWorkerIndex(
         serviceWorker.getVertexPartitionOwner(vertexId).getWorkerInfo());
   }
+
+  public void simulateWorkerFailure() {
+    serviceWorker.simulateWorkerFailure();
+  }
 }

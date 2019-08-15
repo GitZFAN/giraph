@@ -791,6 +791,14 @@ public class BspServiceMaster<I extends WritableComparable,
       observer.preApplication();
       getContext().progress();
     }
+
+    try {
+      writeFailureToZk();
+    } catch (KeeperException e) {
+      throw new IllegalStateException("write Failure to ZK failed:", e);
+    } catch (InterruptedException e) {
+      throw new IllegalStateException("write Failure to ZK failed:", e);
+    }
   }
 
   @Override

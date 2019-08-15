@@ -35,6 +35,7 @@ public class MySSPComputation extends BasicComputation<
     public void compute(
             Vertex<LongWritable, DoubleWritable, FloatWritable> vertex,
             Iterable<DoubleWritable> messages) throws IOException {
+        simulateWorkerFailure();
         if (getSuperstep() == 0) {
             vertex.setValue(new DoubleWritable(Double.MAX_VALUE));
         }
