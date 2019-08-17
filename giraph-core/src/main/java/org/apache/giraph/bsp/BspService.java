@@ -969,11 +969,13 @@ public abstract class BspService<I extends WritableComparable,
         String workers = supAndWorkers.split(":")[1];
         for (String w: workers.split(",")
         ) {
-          getZkExt().createExt(basePath + "/_failure/" + superstep + "/" + w,
+          String wpath = basePath + "/_failure/" + superstep + "/" + w;
+          String extPath = getZkExt().createExt(wpath,
                   null,
                   Ids.OPEN_ACL_UNSAFE,
                   CreateMode.PERSISTENT,
                   true);
+          LOG.info("fzhang: actual created path [" + extPath + "]");
         }
       }
     }
@@ -982,6 +984,7 @@ public abstract class BspService<I extends WritableComparable,
   public void simulateFailure() {
     long superstep = getSuperstep();
     int taskPartition = getConfiguration().getTaskPartition();
+    LOG.info("fzhang: now is at superstep " + superstep + ", my taskpartition " + taskPartition);
     String failurePath = basePath + "/_failure";
     try {
       getZkExt().createExt(failurePath,
@@ -1023,13 +1026,22 @@ public abstract class BspService<I extends WritableComparable,
                         true, false, false);
         if (failureWorkerList.isEmpty()) {
           return;
-        } else if (failureWorkerList.contains(String.valueOf(taskPartition))) {
-          String failureSWPath = failurePath + "/" + superstep + "/" + taskPartition;
-          LOG.info("fzhang: simulate failure at path [" + failureSWPath + "]");
-          getZkExt().deleteExt(failureSWPath, -1, false);
-          throw new RuntimeException("fzhang: simulate worker " + taskPartition + " failure, " +
-                  "at superstep " + superstep);
+        } else {
+          String fworkers = "";
+          for (String fworker :
+                  failureWorkerList) {
+            fworkers += fworker + " ";
+          }
+          LOG.info("fzhang: workers [ " + fworkers + "] should failure at superstep " + superstep);
+          if (failureWorkerList.contains(String.valueOf(taskPartition))) {
+            String failureSWPath = failurePath + "/" + superstep + "/" + taskPartition;
+            LOG.info("fzhang: simulate failure at path [" + failureSWPath + "]");
+            getZkExt().deleteExt(failureSWPath, -1, false);
+            throw new RuntimeException("fzhang: simulate worker " + taskPartition + " failure, " +
+                    "at superstep " + superstep);
+          }
         }
+
       } catch (KeeperException e) {
         throw new IllegalStateException(
                 "simulateFailure: KeeperException", e);

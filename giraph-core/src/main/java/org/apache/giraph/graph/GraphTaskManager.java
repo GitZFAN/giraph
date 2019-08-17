@@ -277,10 +277,12 @@ end[PURE_YARN]*/
     }
 
     String failureSupersteps = conf.get("failureSuperstepsWorkers");
-    for (String supAndWorker :
-            failureSupersteps.split("\\+")) {
-      LOG.info("fzhang: failure will occur at superstep [" + supAndWorker.split(":")[0]
-              + "], worker [" + supAndWorker.split(":")[1] + "]");
+    if (failureSupersteps != null) {
+      for (String supAndWorker :
+              failureSupersteps.split("\\+")) {
+        LOG.info("fzhang: failure will occur at superstep [" + supAndWorker.split(":")[0]
+                + "], worker [" + supAndWorker.split(":")[1] + "]");
+      }
     }
 
     context.setStatus(getGraphFunctions().toString() + " starting...");
