@@ -71,6 +71,7 @@ public class ConnectedComponentsComputation extends
         }
       }
       // Only need to send value if it is not the own id
+      /** 为什么只有 出节点的值 中存在比本身节点的值小的时候才需要发送消息？ */
       if (currentComponent != vertex.getValue().get()) {
         vertex.setValue(new IntWritable(currentComponent));
         for (Edge<IntWritable, NullWritable> edge : vertex.getEdges()) {
